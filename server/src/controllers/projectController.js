@@ -135,9 +135,9 @@ const patchProjectById = async (req, res) => {
             project.status = req.body.status;
         }
 
-        const updatedProject = await project.save();
+        await project.save();
 
-        return res.status(200).json(updatedProject);
+        return res.status(200).json(project);
 
     } catch (err) {
         return res.status(500).json({

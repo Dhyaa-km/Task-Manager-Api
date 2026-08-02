@@ -138,4 +138,88 @@ const getTaskById = async (req, res) => {
     }
 }
 
-module.exports = { createTask, getAllTasks }
+const patchTaskById = async (req, res) => {
+    const { taskId } = req.params
+
+    try {
+
+        const task = await Task.findById( taskId ).exec();
+        if (!task) return res.status(404).json({ message: "Task not found" });
+
+        const project = await Project.findOne({
+            _id: task.project,
+            owner: req.user.id
+        }).exec();
+        if (!project) return res.status(403).json({ message: "forbidden" });
+
+        const title = req.body.title?.trim();
+        const description = req.body.description?.trim();
+        const priority = req.body.priority;
+        const dueDate = req.body.dueDate;
+        const status = req.body.status;
+
+        if (!title && !description && !priority && !status && !dueDate) return res.status(400).json({message: "At least one field is required." });
+
+        if (title) task.title = title;
+
+        if (description) task.description = description;
+        
+        if (priority) {
+            if (!allowedPriorities.includes(priority)) {
+                return res.status(400).json({
+                    message: "Invalid priority."
+                });
+            }
+
+            task.priority = priority;
+        }
+
+        if (status) {
+            if (!allowedStatuses.includes(status)) {
+                return res.status(400).json({
+                    message: "Invalid status."
+                });
+            }
+
+            task.status = status;
+        }
+
+        if (dueDate) {
+            const parsedDueDate = new Date(dueDate);
+            if (parsedDueDate.getTime() <= Date.now()) {
+                return res.status(400).json({
+                    message: "Due date must be in the future."
+                });
+            }
+
+            task.dueDate = parsedDueDate;
+        }
+
+
+        await task.save();
+        return res.status(200).json(task);
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+}
+
+const deleteTaskById = async (req, res) => {
+    const { taskId } = req.params
+
+    try {
+        const task = await Task.findById(taskId).exec();
+        if (!task) return res.status(404).json({ message: "Task not found" });
+        
+        const project = await Project.findOne({
+            _id: task.project,
+            owner: req.user.id
+        }).exec();
+        if (!project) return res.status(403).json({ message: "forbidden" })
+
+        await task.deleteOne();
+        return res.sendStatus(204);
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+}
+module.exports = { createTask, getAllTasks, getTaskById, patchTaskById, deleteTaskById };
