@@ -10,6 +10,7 @@ const emptyDashboard = {
     highPriorityTasks: 0
 }
 
+
 const dashboardController = async (req, res) => {
     try {
         
