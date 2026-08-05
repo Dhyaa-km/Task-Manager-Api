@@ -68,7 +68,6 @@ const getAllTasks = async (req, res) => {
 
     try {
         
-        
         const projectId = req.params.projectId;
         const limit = parseInt(req.query.limit) || 10;
         const page = parseInt(req.query.page) || 1;
