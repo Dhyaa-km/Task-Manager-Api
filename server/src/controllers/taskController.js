@@ -89,10 +89,7 @@ const getAllTasks = async (req, res) => {
         const filter = { project: projectId };
         const search = req.query.search?.trim();
 
-        if (
-            req.query.status &&
-            !allowedStatuses.includes(req.query.status)
-        ) {
+        if ( req.query.status && !allowedStatuses.includes(req.query.status)) {
             return res.status(400).json({
                 message: "Invalid status."
             });
@@ -101,6 +98,7 @@ const getAllTasks = async (req, res) => {
         if (req.query.status) {
             filter.status = req.query.status;
         }
+
         if(search) {
             filter.title = {
                 $regex: search,
@@ -136,6 +134,7 @@ const getAllTasks = async (req, res) => {
             totalTasks,
             limit
         });
+        
     } catch (error) {
         return res.status(500).json({ message: error.message });
     }
