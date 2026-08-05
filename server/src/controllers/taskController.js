@@ -2,6 +2,12 @@ const Task = require("../models/Task");
 const Project = require("../models/Project");
 const allowedPriorities = ["low", "medium", "high"];
 const allowedStatuses = ["todo", "in-progress", "done"];
+const allowedSorts = ["createdAt", "dueDate", "title"];
+const sortOptions = {
+    createdAt: { createdAt: -1 },
+    dueDate: { dueDate: 1 },
+    title: { title: 1 }
+}
 
 const createTask = async (req, res) => {
 
@@ -81,7 +87,8 @@ const getAllTasks = async (req, res) => {
         
         const skip = (page - 1) * limit;
 
-        let filter = { project: projectId };
+        const filter = { project: projectId };
+        const search = req.query.search?.trim();
 
         if (
             req.query.status &&
@@ -95,15 +102,33 @@ const getAllTasks = async (req, res) => {
         if (req.query.status) {
             filter.status = req.query.status;
         }
+        if(search) {
+            filter.title = {
+                $regex: search,
+                $options: "i"
+            };
+        }
+
+        const sort = req.query.sort;
+        if(sort && !allowedSorts.includes(sort)) {
+            return res.status(400).json({
+                message: "Invalid sort."
+            });
+        }
+
+        const totalTasks = await Task.countDocuments(filter);
+        const totalPages = Math.ceil(totalTasks / limit);
+
+        if (page > totalPages && totalTasks > 0) {
+            return res.status(400).json({
+                message: "Page does not exist."
+            });
+        }
 
         const tasks = await Task.find(filter)
             .skip(skip)
             .limit(limit)
-            .sort({ createdAt: -1 });
-
-        const totalTasks = await Task.countDocuments(filter);
-
-        const totalPages = Math.ceil(totalTasks / limit);
+            .sort(sortOptions[sort] || { createdAt: -1 });
 
         return res.status(200).json({
             tasks,
@@ -115,7 +140,6 @@ const getAllTasks = async (req, res) => {
     } catch (error) {
         return res.status(500).json({ message: error.message });
     }
-
 }
 
 const getTaskById = async (req, res) => {
