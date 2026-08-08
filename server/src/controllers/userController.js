@@ -1,4 +1,6 @@
 const User = require("../models/User");
+const Project = require("../models/Project");
+const Task = require("../models/Task");
 const bcrypt = require("bcrypt");
 const allowedStatuses = ["active", "inactive"];
 const mongoose = require('mongoose');
@@ -232,4 +234,77 @@ const updateUserById = async (req, res) => {
     }
 }
 
-module.exports = { getMe, updateMe, updatePassword, getAllUsers, getUserById, updateUserById };
+const deleteUser = async (req, res) => {
+    try {
+        const { userId } = req.params;
+
+        // Validate user ID
+        if (!mongoose.isValidObjectId(userId)) {
+            return res.status(400).json({
+                message: "Invalid user ID."
+            });
+        }
+
+        // Find target user
+        const user = await User.findById(userId).exec();
+
+        if (!user) {
+            return res.status(404).json({
+                message: "User not found."
+            });
+        }
+
+        // Prevent admin from deleting themselves
+        if (user._id.toString() === req.user.id) {
+            return res.status(403).json({
+                message: "You cannot delete your own account."
+            });
+        }
+
+        // Prevent deleting the last admin
+        if (user.role === "admin") {
+            const adminCount = await User.countDocuments({
+                role: "admin"
+            });
+
+            if (adminCount === 1) {
+                return res.status(400).json({
+                    message: "Cannot delete the last admin."
+                });
+            }
+        }
+
+        // Find user's projects
+        const projects = await Project.find({
+            owner: userId
+        }).select("_id").exec();
+
+        const projectIds = projects.map(project => project._id);
+
+        // Delete tasks belonging to those projects
+        if (projectIds.length > 0) {
+            await Task.deleteMany({
+                project: { $in: projectIds }
+            });
+        }
+
+        // Delete user's projects
+        await Project.deleteMany({
+            owner: userId
+        });
+
+        // Delete user
+        await User.deleteOne({
+            _id: userId
+        });
+
+        return res.sendStatus(204);
+
+    } catch (err) {
+        return res.status(500).json({
+            message: err.message
+        });
+    }
+};
+
+module.exports = { getMe, updateMe, updatePassword, getAllUsers, getUserById, updateUserById, deleteUser };
