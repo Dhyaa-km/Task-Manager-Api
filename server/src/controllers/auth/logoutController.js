@@ -22,7 +22,7 @@ const logoutController = async (req, res) => {
         return res.sendStatus(204);
         
     } catch (err) {
-        res.status(500).json({ message: errr.message });
+        res.status(500).json({ message: err.message });
     }
 }
 
