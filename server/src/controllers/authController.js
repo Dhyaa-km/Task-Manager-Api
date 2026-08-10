@@ -39,16 +39,17 @@ const handleLogin = async (req , res) => {
 
     const { username, password, email} = req.body;
 
-    if (!username || !password || !email) {
-        return res.status(400).json({ message: "Username and password are required." });
+    if ((!username && !email) || !password) {
+        return res.status(400).json({
+            message: "Username or email and password are required."
+        });
     }
 
-   const foundUser = await User.findOne({
-    $or: [
-        { username: login },
-        { email: login }
-    ]
-});
+    const loginField = username
+        ? { username }
+        : { email };
+
+   const foundUser = await User.findOne(loginField).exec();
 
     if (!foundUser) {
         return res.status(401).json({ message: "Unauthorized" });
