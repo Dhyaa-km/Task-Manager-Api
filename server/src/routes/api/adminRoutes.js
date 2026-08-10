@@ -3,8 +3,8 @@ const router = express.Router();
 
 const { adminDashboardController } = require("../../controllers/adminDashboardController");
 
-const verifyJWT = require("../../middleware/verifyJWT");
-const verifyRoles = require("../../middleware/verifyRoles");
+const {verifyJWT} = require("../../middleware/verifyJWT");
+const {verifyRoles} = require("../../middleware/verifyRoles");
 
 router.get("/dashboard",
     verifyJWT,
