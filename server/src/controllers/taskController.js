@@ -54,7 +54,8 @@ const createTask = async (req, res) => {
             description,
             priority,
             dueDate,
-            project: projectId
+            project: projectId,
+            user: req.user.id
         });
         return res.status(201).json(task);
     } catch (err) {
@@ -145,7 +146,10 @@ const getTaskById = async (req, res) => {
 
     try { 
 
-        const task = await Task.findOne(taskId).exec();
+        const task = await Task.findOne({
+            _id: taskId,
+            user: req.user.id
+        }).exec();
         if (!task) return res.status(404).json({ message: "Task not found" });
         
         const project = await Project.findOne({
