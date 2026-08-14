@@ -13,6 +13,7 @@ const createTask = async (req, res) => {
 
     const title = req.body.title?.trim();
     const description = req.body.description?.trim();
+    const status = req.body.status || "todo";
     const priority = req.body.priority;
     const dueDate = req.body.dueDate;
 
@@ -25,6 +26,11 @@ const createTask = async (req, res) => {
     if (!allowedPriorities.includes(priority)) {
         return res.status(400).json({
             message: "Invalid priority."
+        });
+    }
+    if (!allowedStatuses.includes(status)) {
+        return res.status(400).json({
+            message: "Invalid status."
         });
     }
 
@@ -52,6 +58,7 @@ const createTask = async (req, res) => {
         const task = await Task.create({
             title,
             description,
+            status,
             priority,
             dueDate,
             project: projectId,

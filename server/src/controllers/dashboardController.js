@@ -42,7 +42,7 @@ const dashboardController = async (req, res) => {
             project: {
                 $in: projectId
             },
-            status: "in-Progress"
+            status: "in-progress"
         });
 
         const doneTasks = await Task.countDocuments({
