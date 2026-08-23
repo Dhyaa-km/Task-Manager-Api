@@ -2,8 +2,11 @@ import { useEffect, useState } from "react";
 
 import { getDashboardStats } from "../services/dashboardService";
 import type { DashboardStats } from "../types/dashboard";
+import { useAuth } from "../context/AuthContext";
 
 function Dashboard() {
+  const { user, logout } = useAuth();
+
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -87,14 +90,23 @@ function Dashboard() {
       <div className="mx-auto max-w-7xl">
 
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">
-            Dashboard
-          </h1>
+        <div className="mb-8 flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">
+              Welcome, {user?.username}
+            </h1>
 
-          <p className="mt-2 text-gray-500">
-            Overview of your projects and tasks.
-          </p>
+            <p className="mt-2 text-gray-500">
+              Here's an overview of your projects and tasks.
+            </p>
+          </div>
+
+          <button
+            onClick={logout}
+            className="rounded-lg cursor-pointer bg-red-500 px-5 py-2.5 font-medium text-white transition hover:bg-red-600"
+          >
+            Logout
+          </button>
         </div>
 
         {/* Statistics */}
