@@ -85,11 +85,11 @@ const handleLogin = async (req , res) => {
     await foundUser.save();
 
     // Create secure cookie with refresh token
-    res.cookie('jwt', refreshToken, {
-        httpOnly: true, //accessible only by web server
-        secure: true, //https
-        sameSite: 'None', //cross-site cookie
-        maxAge: 24 * 60 * 60 * 1000 //cookie expiry date in ms = 1 day
+    res.cookie("jwt", refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+        maxAge: 24 * 60 * 60 * 1000
     });
 
     // Send accessToken containing username and roles

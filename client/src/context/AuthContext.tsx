@@ -13,6 +13,8 @@ import {
   registerUser,
 } from "../services/authService";
 
+import { setAccessToken as setApiAccessToken } from "../services/api";
+
 import type {
   LoginData,
   RegisterData,
@@ -32,18 +34,23 @@ const AuthContext = createContext<AuthContextType | undefined>(
   undefined
 );
 
-export const AuthProvider = ({ children }: { children: ReactNode }) => {
+export const AuthProvider = ({
+  children,
+}: {
+  children: ReactNode;
+}) => {
   const [user, setUser] = useState<User | null>(null);
-  const [accessToken, setAccessToken] = useState<string | null>(null);
+  const [accessToken, setAccessTokenState] = useState<string | null>(
+    null
+  );
   const [loading, setLoading] = useState(true);
 
-  const login = async (data: LoginData) => {
-    const response = await loginUser(data);
-
-    setAccessToken(response.accessToken);
+  const saveToken = (token: string) => {
+    setAccessTokenState(token);
+    setApiAccessToken(token);
 
     const payload = JSON.parse(
-      atob(response.accessToken.split(".")[1])
+      atob(token.split(".")[1])
     );
 
     setUser({
@@ -51,6 +58,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       username: payload.UserInfo.username,
       role: payload.UserInfo.role,
     });
+  };
+
+  const login = async (data: LoginData) => {
+    const response = await loginUser(data);
+
+    saveToken(response.accessToken);
   };
 
   const register = async (data: RegisterData) => {
@@ -62,7 +75,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       await logoutUser();
     } finally {
       setUser(null);
-      setAccessToken(null);
+      setAccessTokenState(null);
+      setApiAccessToken(null);
     }
   };
 
@@ -71,20 +85,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       try {
         const response = await refreshAccessToken();
 
-        setAccessToken(response.accessToken);
-
-        const payload = JSON.parse(
-          atob(response.accessToken.split(".")[1])
-        );
-
-        setUser({
-          id: payload.UserInfo.id,
-          username: payload.UserInfo.username,
-          role: payload.UserInfo.role,
-        });
+        saveToken(response.accessToken);
       } catch {
         setUser(null);
-        setAccessToken(null);
+        setAccessTokenState(null);
+        setApiAccessToken(null);
       } finally {
         setLoading(false);
       }
@@ -113,7 +118,9 @@ export const useAuth = () => {
   const context = useContext(AuthContext);
 
   if (!context) {
-    throw new Error("useAuth must be used inside AuthProvider");
+    throw new Error(
+      "useAuth must be used inside AuthProvider"
+    );
   }
 
   return context;

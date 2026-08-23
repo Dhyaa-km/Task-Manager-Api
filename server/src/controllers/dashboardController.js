@@ -19,7 +19,9 @@ const dashboardController = async (req, res) => {
         const projects = await Project.find({
             owner: userId
         }).select("_id");
-        if(projects.length === 0) return res.status(404).json( emptyDashboard );
+        if (projects.length === 0) {
+            return res.status(200).json(emptyDashboard);
+        }
 
         const projectId = projects.map(project => project._id);
 
