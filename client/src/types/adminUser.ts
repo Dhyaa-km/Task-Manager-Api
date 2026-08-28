@@ -29,3 +29,8 @@ export interface AdminUserDetails {
   role: "user" | "admin";
   createdAt: string;
 }
+
+export interface UpdateUserData {
+  role?: "user" | "admin";
+  status?: "active" | "inactive";
+}

@@ -3,6 +3,7 @@ const Project = require("../models/Project");
 const Task = require("../models/Task");
 const bcrypt = require("bcrypt");
 const allowedStatuses = ["active", "inactive"];
+const allowedRoles = ["user", "admin"];
 const mongoose = require('mongoose');
 
 const getMe = async (req, res) => {

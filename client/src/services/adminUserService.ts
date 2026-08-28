@@ -4,6 +4,7 @@ import type {
   AdminUserDetails,
   GetUsersParams,
   GetUsersResponse,
+  UpdateUserData
 } from "../types/adminUser";
 
 
@@ -25,4 +26,22 @@ export const getUserById = async (
   );
 
   return response.data;
+};
+
+export const updateUserById = async (
+  userId: string,
+  data: UpdateUserData
+): Promise<AdminUserDetails> => {
+  const response = await api.patch<AdminUserDetails>(
+    `/users/${userId}`,
+    data
+  );
+
+  return response.data;
+};
+
+export const deleteUser = async (
+  userId: string
+): Promise<void> => {
+  await api.delete(`/users/${userId}`);
 };
