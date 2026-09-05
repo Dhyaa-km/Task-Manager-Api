@@ -24,6 +24,8 @@ import CreateTask from "./pages/CreateTask";
 import TaskDetails from "./pages/TaskDetails";
 import EditTask from "./pages/EditTask";
 
+import MainLayout from "./layouts/MainLayout";
+
 function App() {
   return (
     <BrowserRouter>
@@ -34,18 +36,20 @@ function App() {
 
         {/* User protected */}
         <Route element={<ProtectedRoute />}>
-          <Route path="/dashboard" element={<Dashboard />} />
+          <Route element={<MainLayout />}>
+            <Route path="/dashboard" element={<Dashboard />} />
 
-          {/* Projects */}
-          <Route path="/projects" element={<Projects />} />
-          <Route path="/projects/new" element={<CreateProject />} />
-          <Route path="/projects/:id" element={<ProjectDetails />} />
-          <Route path="/projects/:id/edit" element={<EditProject />} />
+            {/* Projects */}
+            <Route path="/projects" element={<Projects />} />
+            <Route path="/projects/new" element={<CreateProject />} />
+            <Route path="/projects/:id" element={<ProjectDetails />} />
+            <Route path="/projects/:id/edit" element={<EditProject />} />
 
-          {/* Tasks */}
-          <Route path="/projects/:projectId/tasks/new" element={<CreateTask />} />
-          <Route path="/tasks/:taskId" element={<TaskDetails />} />
-          <Route path="/tasks/:taskId/edit" element={<EditTask />} />
+            {/* Tasks */}
+            <Route path="/projects/:projectId/tasks/new" element={<CreateTask />} />
+            <Route path="/tasks/:taskId" element={<TaskDetails />} />
+            <Route path="/tasks/:taskId/edit" element={<EditTask />} />
+          </Route>
         </Route>
 
         {/* Admin protected */}
