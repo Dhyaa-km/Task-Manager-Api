@@ -21,6 +21,8 @@ import ProjectDetails from "./pages/ProjectDetails";
 import EditProject from "./pages/EditProject";
 
 import CreateTask from "./pages/CreateTask";
+import TaskDetails from "./pages/TaskDetails";
+import EditTask from "./pages/EditTask";
 
 function App() {
   return (
@@ -42,6 +44,8 @@ function App() {
 
           {/* Tasks */}
           <Route path="/projects/:projectId/tasks/new" element={<CreateTask />} />
+          <Route path="/tasks/:taskId" element={<TaskDetails />} />
+          <Route path="/tasks/:taskId/edit" element={<EditTask />} />
         </Route>
 
         {/* Admin protected */}
