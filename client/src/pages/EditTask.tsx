@@ -1,6 +1,13 @@
 import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import {
+  AlertCircle,
+  ArrowLeft,
+  ListTodo,
+  Loader2,
+  Save,
+} from "lucide-react";
 
 import { getTaskById, updateTask } from "../services/taskService";
 import type {
@@ -61,8 +68,7 @@ function EditTask() {
         setDueDate(formatDateTimeLocal(data.dueDate));
       } catch (err: any) {
         setError(
-          err.response?.data?.message ||
-            "Failed to load task."
+          err.response?.data?.message || "Failed to load task."
         );
       } finally {
         setLoading(false);
@@ -72,10 +78,7 @@ function EditTask() {
     fetchTask();
   }, [taskId]);
 
-  // Submit
-  const handleSubmit = async (
-    e: FormEvent<HTMLFormElement>
-  ) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!taskId || !task) {
@@ -92,9 +95,7 @@ function EditTask() {
     }
 
     if (trimmedDescription.length < 10) {
-      setError(
-        "Description must be at least 10 characters."
-      );
+      setError("Description must be at least 10 characters.");
       return;
     }
 
@@ -125,8 +126,7 @@ function EditTask() {
       navigate(`/tasks/${taskId}`);
     } catch (err: any) {
       setError(
-        err.response?.data?.message ||
-          "Failed to update task."
+        err.response?.data?.message || "Failed to update task."
       );
     } finally {
       setSaving(false);
@@ -135,24 +135,36 @@ function EditTask() {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-50">
-        <p className="text-gray-500">
-          Loading task...
-        </p>
+      <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center">
+        <div className="flex items-center gap-3 text-gray-500">
+          <Loader2 className="h-5 w-5 animate-spin" />
+          <span>Loading task...</span>
+        </div>
       </div>
     );
   }
 
   if (error && !task) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
-        <div className="text-center">
-          <p className="text-red-500">{error}</p>
+      <div className="mx-auto max-w-3xl">
+        <div className="ui-card p-8 text-center">
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-red-100">
+            <AlertCircle className="h-6 w-6 text-red-600" />
+          </div>
+
+          <h2 className="mt-4 text-lg font-semibold text-gray-900">
+            Unable to load task
+          </h2>
+
+          <p className="mt-2 text-sm text-red-600">
+            {error}
+          </p>
 
           <Link
             to="/projects"
-            className="mt-4 inline-block text-blue-600 hover:underline"
+            className="ui-button-secondary mt-6"
           >
+            <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Projects
           </Link>
         </div>
@@ -165,19 +177,24 @@ function EditTask() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 px-4 py-8">
-      <div className="mx-auto max-w-2xl">
-        {/* Back */}
-        <Link
-          to={`/tasks/${task._id}`}
-          className="text-sm font-medium text-blue-600 hover:underline"
-        >
-          ← Back to Task
-        </Link>
+    <div className="mx-auto max-w-3xl">
+      {/* Back */}
+      <Link
+        to={`/tasks/${task._id}`}
+        className="inline-flex items-center gap-2 text-sm font-medium text-gray-600 transition hover:text-indigo-600"
+      >
+        <ArrowLeft className="h-4 w-4" />
+        Back to Task
+      </Link>
 
-        {/* Header */}
-        <div className="mb-6 mt-4">
-          <h1 className="text-3xl font-bold text-gray-900">
+      {/* Page Header */}
+      <div className="mt-5 flex items-start gap-4">
+        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-indigo-100">
+          <ListTodo className="h-6 w-6 text-indigo-600" />
+        </div>
+
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl">
             Edit Task
           </h1>
 
@@ -185,158 +202,158 @@ function EditTask() {
             Update the task information.
           </p>
         </div>
+      </div>
 
-        {/* Form */}
-        <div className="rounded-xl bg-white p-6 shadow-sm">
-          <form
-            onSubmit={handleSubmit}
-            className="space-y-5"
-          >
-            {error && (
-              <div className="rounded-lg bg-red-50 p-3 text-sm text-red-600">
-                {error}
-              </div>
-            )}
+      {/* Form */}
+      <div className="ui-card mt-6 p-5 sm:p-6">
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Error */}
+          {error && (
+            <div className="flex items-start gap-3 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+              <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+              <span>{error}</span>
+            </div>
+          )}
 
-            {/* Title */}
-            <div>
-              <label
-                htmlFor="title"
-                className="mb-1 block text-sm font-medium text-gray-700"
-              >
+          {/* Title */}
+          <div>
+            <div className="flex items-center justify-between">
+              <label htmlFor="title" className="ui-label">
                 Title
               </label>
 
-              <input
-                id="title"
-                type="text"
-                value={title}
-                onChange={(e) =>
-                  setTitle(e.target.value)
-                }
-                disabled={saving}
-                className="w-full rounded-lg border border-gray-300 px-4 py-2.5 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 disabled:bg-gray-100"
-              />
+              <span className="text-xs text-gray-400">
+                {title.length}/100
+              </span>
             </div>
 
-            {/* Description */}
-            <div>
-              <label
-                htmlFor="description"
-                className="mb-1 block text-sm font-medium text-gray-700"
-              >
+            <input
+              id="title"
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="Enter task title"
+              maxLength={100}
+              disabled={saving}
+              className="ui-input disabled:cursor-not-allowed disabled:bg-gray-100"
+            />
+          </div>
+
+          {/* Description */}
+          <div>
+            <div className="flex items-center justify-between">
+              <label htmlFor="description" className="ui-label">
                 Description
               </label>
 
-              <textarea
-                id="description"
-                value={description}
-                onChange={(e) =>
-                  setDescription(e.target.value)
-                }
-                rows={5}
-                disabled={saving}
-                className="w-full resize-none rounded-lg border border-gray-300 px-4 py-2.5 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 disabled:bg-gray-100"
-              />
+              <span className="text-xs text-gray-400">
+                {description.length}/1000
+              </span>
             </div>
 
-            {/* Priority + Status */}
-            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-              <div>
-                <label
-                  htmlFor="priority"
-                  className="mb-1 block text-sm font-medium text-gray-700"
-                >
-                  Priority
-                </label>
+            <textarea
+              id="description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="Describe the task..."
+              rows={6}
+              maxLength={1000}
+              disabled={saving}
+              className="ui-input resize-none disabled:cursor-not-allowed disabled:bg-gray-100"
+            />
+          </div>
 
-                <select
-                  id="priority"
-                  value={priority}
-                  onChange={(e) =>
-                    setPriority(
-                      e.target.value as TaskPriority
-                    )
-                  }
-                  disabled={saving}
-                  className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 disabled:bg-gray-100"
-                >
-                  <option value="low">Low</option>
-                  <option value="medium">Medium</option>
-                  <option value="high">High</option>
-                </select>
-              </div>
-
-              <div>
-                <label
-                  htmlFor="status"
-                  className="mb-1 block text-sm font-medium text-gray-700"
-                >
-                  Status
-                </label>
-
-                <select
-                  id="status"
-                  value={status}
-                  onChange={(e) =>
-                    setStatus(
-                      e.target.value as TaskStatus
-                    )
-                  }
-                  disabled={saving}
-                  className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 disabled:bg-gray-100"
-                >
-                  <option value="todo">To Do</option>
-                  <option value="in-progress">
-                    In Progress
-                  </option>
-                  <option value="done">Done</option>
-                </select>
-              </div>
-            </div>
-
-            {/* Due Date */}
+          {/* Priority + Status */}
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
             <div>
-              <label
-                htmlFor="dueDate"
-                className="mb-1 block text-sm font-medium text-gray-700"
-              >
-                Due Date
+              <label htmlFor="priority" className="ui-label">
+                Priority
               </label>
 
-              <input
-                id="dueDate"
-                type="datetime-local"
-                value={dueDate}
+              <select
+                id="priority"
+                value={priority}
                 onChange={(e) =>
-                  setDueDate(e.target.value)
+                  setPriority(e.target.value as TaskPriority)
                 }
                 disabled={saving}
-                className="w-full rounded-lg border border-gray-300 px-4 py-2.5 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 disabled:bg-gray-100"
-              />
+                className="ui-input disabled:cursor-not-allowed disabled:bg-gray-100"
+              >
+                <option value="low">Low</option>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
+              </select>
             </div>
 
-            {/* Buttons */}
-            <div className="flex items-center justify-end gap-3 border-t border-gray-100 pt-5">
-              <Link
-                to={`/tasks/${task._id}`}
-                className="rounded-lg border border-gray-300 px-5 py-2.5 text-sm font-medium text-gray-700 transition hover:bg-gray-50"
-              >
-                Cancel
-              </Link>
+            <div>
+              <label htmlFor="status" className="ui-label">
+                Status
+              </label>
 
-              <button
-                type="submit"
+              <select
+                id="status"
+                value={status}
+                onChange={(e) =>
+                  setStatus(e.target.value as TaskStatus)
+                }
                 disabled={saving}
-                className="rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+                className="ui-input disabled:cursor-not-allowed disabled:bg-gray-100"
               >
-                {saving
-                  ? "Saving..."
-                  : "Save Changes"}
-              </button>
+                <option value="todo">To Do</option>
+                <option value="in-progress">In Progress</option>
+                <option value="done">Done</option>
+              </select>
             </div>
-          </form>
-        </div>
+          </div>
+
+          {/* Due Date */}
+          <div>
+            <label htmlFor="dueDate" className="ui-label">
+              Due Date
+            </label>
+
+            <input
+              id="dueDate"
+              type="datetime-local"
+              value={dueDate}
+              onChange={(e) => setDueDate(e.target.value)}
+              disabled={saving}
+              className="ui-input disabled:cursor-not-allowed disabled:bg-gray-100"
+            />
+
+            <p className="mt-1.5 text-xs text-gray-400">
+              Choose a future date and time for this task.
+            </p>
+          </div>
+
+          {/* Buttons */}
+          <div className="flex flex-col-reverse gap-3 border-t border-gray-100 pt-6 sm:flex-row sm:justify-end">
+            <Link
+              to={`/tasks/${task._id}`}
+              className="ui-button-secondary w-full sm:w-auto"
+            >
+              Cancel
+            </Link>
+
+            <button
+              type="submit"
+              disabled={saving}
+              className="ui-button-primary w-full disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
+            >
+              {saving ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                <>
+                  <Save className="mr-2 h-4 w-4" />
+                  Save Changes
+                </>
+              )}
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );
