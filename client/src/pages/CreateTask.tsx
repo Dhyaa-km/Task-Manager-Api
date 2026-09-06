@@ -1,4 +1,5 @@
-import { FormEvent, useState } from "react";
+import { useState } from "react";
+import type { FormEvent } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 
 import { createTask } from "../services/taskService";

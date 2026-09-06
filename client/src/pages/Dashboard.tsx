@@ -8,6 +8,7 @@ import {
   ListTodo,
   RefreshCw,
 } from "lucide-react";
+import { BarChart, PieChart } from "@mui/x-charts";
 
 import { getDashboardStats } from "../services/dashboardService";
 import type { DashboardStats } from "../types/dashboard";
@@ -71,21 +72,17 @@ function Dashboard() {
     return null;
   }
 
-  // Calculate task progress percentages
   const totalTasks = stats.totalTasks;
-
-  const todoPercentage =
-    totalTasks > 0 ? (stats.todoTasks / totalTasks) * 100 : 0;
-
-  const inProgressPercentage =
-    totalTasks > 0
-      ? (stats.inProgressTasks / totalTasks) * 100
-      : 0;
 
   const completedPercentage =
     totalTasks > 0
-      ? (stats.doneTasks / totalTasks) * 100
+      ? Math.round((stats.doneTasks / totalTasks) * 100)
       : 0;
+
+  const remainingTasks = Math.max(
+    totalTasks - stats.doneTasks,
+    0
+  );
 
   const cards = [
     {
@@ -177,76 +174,126 @@ function Dashboard() {
         })}
       </div>
 
-      {/* Task Progress */}
-      <div className="mt-6 rounded-xl border border-gray-200 bg-white p-5 shadow-sm sm:p-6">
-        <div className="mb-6">
-          <h2 className="text-lg font-semibold text-gray-900">
-            Task Progress
-          </h2>
+      {/* Task Analytics */}
+      <div className="mt-6 grid gap-6 lg:grid-cols-2">
+        {/* Tasks by Status */}
+        <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm sm:p-6">
+          <div className="mb-4">
+            <h2 className="text-lg font-semibold text-gray-900">
+              Tasks by Status
+            </h2>
 
-          <p className="mt-1 text-sm text-gray-500">
-            Overview of your current task status.
-          </p>
+            <p className="mt-1 text-sm text-gray-500">
+              Distribution of your current tasks.
+            </p>
+          </div>
+
+          <div className="flex w-full justify-center overflow-hidden">
+            <BarChart
+              height={300}
+              xAxis={[
+                {
+                  scaleType: "band",
+                  data: [
+                    "To Do",
+                    "In Progress",
+                    "Completed",
+                  ],
+                },
+              ]}
+              series={[
+                {
+                  data: [
+                    stats.todoTasks,
+                    stats.inProgressTasks,
+                    stats.doneTasks,
+                  ],
+                },
+              ]}
+              borderRadius={6}
+              grid={{ horizontal: true }}
+              margin={{
+                top: 20,
+                right: 20,
+                bottom: 40,
+                left: 50,
+              }}
+            />
+          </div>
         </div>
 
-        <div className="space-y-5">
-          {/* To Do */}
-          <div>
-            <div className="mb-2 flex items-center justify-between">
-              <span className="text-sm font-medium text-gray-700">
-                To Do
-              </span>
+        {/* Task Completion */}
+        <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm sm:p-6">
+          <div className="mb-4">
+            <h2 className="text-lg font-semibold text-gray-900">
+              Task Completion
+            </h2>
 
-              <span className="text-sm font-semibold text-gray-900">
-                {stats.todoTasks}
-              </span>
-            </div>
-
-            <div className="h-2.5 overflow-hidden rounded-full bg-gray-100">
-              <div
-                className="h-full rounded-full bg-amber-500 transition-all duration-500"
-                style={{ width: `${todoPercentage}%` }}
-              />
-            </div>
+            <p className="mt-1 text-sm text-gray-500">
+              Percentage of tasks you have completed.
+            </p>
           </div>
 
-          {/* In Progress */}
-          <div>
-            <div className="mb-2 flex items-center justify-between">
-              <span className="text-sm font-medium text-gray-700">
-                In Progress
+          <div className="relative flex items-center justify-center">
+            <PieChart
+              height={300}
+              series={[
+                {
+                  data: [
+                    {
+                      id: "completed",
+                      value: stats.doneTasks,
+                      label: "Completed",
+                    },
+                    {
+                      id: "remaining",
+                      value: remainingTasks,
+                      label: "Remaining",
+                    },
+                  ],
+                  innerRadius: 75,
+                  outerRadius: 110,
+                  paddingAngle: 2,
+                  cornerRadius: 5,
+                },
+              ]}
+              margin={{
+                top: 10,
+                right: 10,
+                bottom: 10,
+                left: 10,
+              }}
+              hideLegend
+            />
+
+            {/* Center percentage */}
+            <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
+              <span className="text-3xl font-bold text-gray-900">
+                {completedPercentage}%
               </span>
 
-              <span className="text-sm font-semibold text-gray-900">
-                {stats.inProgressTasks}
-              </span>
-            </div>
-
-            <div className="h-2.5 overflow-hidden rounded-full bg-gray-100">
-              <div
-                className="h-full rounded-full bg-violet-500 transition-all duration-500"
-                style={{ width: `${inProgressPercentage}%` }}
-              />
-            </div>
-          </div>
-
-          {/* Completed */}
-          <div>
-            <div className="mb-2 flex items-center justify-between">
-              <span className="text-sm font-medium text-gray-700">
+              <span className="mt-1 text-sm text-gray-500">
                 Completed
               </span>
+            </div>
+          </div>
 
-              <span className="text-sm font-semibold text-gray-900">
-                {stats.doneTasks}
+          {/* Donut legend */}
+          <div className="mt-2 flex flex-wrap items-center justify-center gap-6 text-sm">
+            <div className="flex items-center gap-2">
+              <span className="h-2.5 w-2.5 rounded-full bg-indigo-500" />
+
+              <span className="text-gray-600">
+                Completed: {stats.doneTasks}
               </span>
             </div>
 
-            <div className="h-2.5 overflow-hidden rounded-full bg-gray-100">
-              <div
-                className="h-full rounded-full bg-emerald-500 transition-all duration-500"
-                style={{ width: `${completedPercentage}%` }}
-              />
+            <div className="flex items-center gap-2">
+              <span className="h-2.5 w-2.5 rounded-full bg-gray-200" />
+
+              <span className="text-gray-600">
+                Remaining: {remainingTasks}
+              </span>
             </div>
           </div>
         </div>

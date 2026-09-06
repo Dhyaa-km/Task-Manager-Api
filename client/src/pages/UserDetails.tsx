@@ -91,7 +91,7 @@ function UserDetails() {
   if (!userId) return;
 
   const confirmed = window.confirm(
-    `Are you sure you want to delete "${user.username}"? This action cannot be undone.`
+    `Are you sure you want to delete "${user?.username}"? This action cannot be undone.`
   );
 
   if (!confirmed) return;
@@ -111,7 +111,7 @@ function UserDetails() {
   } finally {
     setDeleting(false);
   }
-};
+  };
 
   // Loading
   if (loading) {
