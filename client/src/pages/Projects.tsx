@@ -154,8 +154,7 @@ function Projects() {
             {projects.map((project) => (
               <div
                 key={project._id}
-                className="group flex flex-col rounded-xl border border-gray-200 bg-white p-5 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:shadow-md"
-              >
+                  className="group flex flex-col rounded-xl border border-gray-200 bg-white p-5 shadow-sm transition duration-200 motion-reduce:transform-none motion-reduce:transition-none hover:-translate-y-0.5 hover:shadow-md"              >
                 {/* Card Header */}
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex min-w-0 items-center gap-3">
@@ -191,7 +190,7 @@ function Projects() {
                 </div>
 
                 {/* Description */}
-                <p className="mt-5 min-h-[60px] line-clamp-3 text-sm leading-6 text-gray-600">
+                <p className="mt-5 min-h-15 line-clamp-3 text-sm leading-6 text-gray-600">
                   {project.description || "No description provided."}
                 </p>
 

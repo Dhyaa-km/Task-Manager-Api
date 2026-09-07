@@ -21,3 +21,22 @@ export interface LoginData {
   username: string;
   password: string;
 }
+
+export interface UserProfile  {
+  username: string;
+  email: string;
+  role: "user" | "admin";
+  status: "active" | "inactive";
+  avatar?: string;
+}
+
+export interface UpdateProfileData {
+  username?: string;
+  email?: string;
+  avatar?: string;
+}
+
+export interface UpdatePasswordData {
+  currentPassword: string;
+  newPassword: string;
+}

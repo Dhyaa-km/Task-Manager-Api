@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { NavLink, Outlet } from "react-router-dom";
+import { NavLink, Outlet, Link } from "react-router-dom";
 import {
   LayoutDashboard,
   FolderKanban,
@@ -195,9 +195,21 @@ function MainLayout() {
           </div>
 
           {/* User avatar */}
-          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-indigo-100 text-sm font-semibold text-indigo-600">
-            {user?.username?.charAt(0).toUpperCase()}
-          </div>
+          <Link
+            to="/profile"
+            className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-indigo-100 text-sm font-semibold text-indigo-600 transition hover:bg-indigo-200"
+            aria-label="Open your profile"
+          >
+            {user?.avatar ? (
+              <img
+                src={user.avatar}
+                alt={`${user.username}'s avatar`}
+                className="h-full w-full object-cover"
+              />
+            ) : (
+              user?.username?.charAt(0).toUpperCase()
+            )}
+          </Link>
         </header>
 
         {/* ================================

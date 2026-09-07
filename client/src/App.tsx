@@ -24,6 +24,8 @@ import CreateTask from "./pages/CreateTask";
 import TaskDetails from "./pages/TaskDetails";
 import EditTask from "./pages/EditTask";
 
+import Profile from "./pages/Profile";
+
 import MainLayout from "./layouts/MainLayout";
 
 function App() {
@@ -49,6 +51,9 @@ function App() {
             <Route path="/projects/:projectId/tasks/new" element={<CreateTask />} />
             <Route path="/tasks/:taskId" element={<TaskDetails />} />
             <Route path="/tasks/:taskId/edit" element={<EditTask />} />
+
+            {/* { user } */}
+            <Route path="/profile" element={<Profile />} />
           </Route>
         </Route>
 
