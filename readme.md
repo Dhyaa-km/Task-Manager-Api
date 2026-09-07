@@ -273,15 +273,6 @@ npm run dev
 | `npm run dev` | `client/` | Start the Vite dev server |
 | `npm run build` | `client/` | Type-check and build the frontend for production |
 | `npm run preview` | `client/` | Preview the production build locally |
- 
-## Security
- 
-- Passwords are hashed with bcrypt and are never returned by the API.
-- Authentication uses short-lived JWT access tokens plus a separate refresh token kept in an `httpOnly` cookie, so it isn't accessible to client-side JavaScript.
-- Private and admin routes are protected by dedicated middleware (`verifyJWT`, `verifyRoles`).
-- Ownership checks ensure users can only read or modify their own projects and tasks.
-- Admin safeguards prevent an admin from deactivating, demoting, or deleting their own account, and prevent removing the last remaining admin.
-- Server-side validation covers required fields, field lengths, allowed status/priority/role values, future-only due dates, email format, and password strength.
 
 
 ## Contributing
