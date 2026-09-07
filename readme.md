@@ -15,26 +15,9 @@ A full-stack task management application built with React, TypeScript, Node.js, 
  
 Task Manager lets users organize work into projects and tasks, track status and priority, monitor progress through a dashboard, and manage their account. It also includes JWT-based authentication, role-based authorization, and an admin dashboard for managing users.
  
-🔗 **Live Demo:** [Add deployment URL]
+🔗 **Live Demo:** [will added later]
  
-## Table of Contents
- 
-- [Features](#features)
-- [Tech Stack](#tech-stack)
-- [Architecture](#architecture)
-- [Project Structure](#project-structure)
-- [Authentication & Authorization](#authentication--authorization)
-- [API Endpoints](#api-endpoints)
-- [Database Models](#database-models)
-- [Getting Started](#getting-started)
-- [Environment Variables](#environment-variables)
-- [Running the Project](#running-the-project)
-- [Security](#security)
-- [Screenshots](#screenshots)
-- [Future Improvements](#future-improvements)
-- [Contributing](#contributing)
-- [Author](#author)
-- [License](#license)
+
 ## Features
  
 ### Authentication & Security
@@ -108,10 +91,7 @@ Task Manager lets users organize work into projects and tasks, track status and 
 ### Database
  
 MongoDB, accessed through Mongoose models for `User`, `Project`, and `Task`.
- 
-### Authentication
- 
-Custom JWT-based authentication (no third-party auth provider) — see [Authentication & Authorization](#authentication--authorization) below.
+
  
 ## Architecture
  
@@ -126,10 +106,7 @@ React + TypeScript (Vite)
           v
         MongoDB
 ```
- 
-- **Client** — a React SPA that handles routing (React Router), auth state (`AuthContext`), and talks to the API through per-resource Axios service modules (`authService`, `userService`, `projectService`, `taskService`, `adminUserService`, `adminDashboardService`, `dashboardService`).
-- **Server** — an Express REST API organized into `routes → controllers → models`, with middleware for JWT verification, role checks, and MongoDB ObjectId validation.
-- **Database** — MongoDB, with data shaped by the Mongoose schemas described in [Database Models](#database-models).
+
 ## Project Structure
  
 ```
@@ -160,32 +137,7 @@ Task-Manager-Api/
 ├── .gitignore
 └── readme.md
 ```
- 
-## Authentication & Authorization
- 
-```
-User
- |
- | POST /api/auth/login (username or email + password)
- v
-Express API  --  bcrypt.compare()  -->  MongoDB (User)
- |
- | credentials valid → issue tokens
- v
-Access Token (JWT)              Refresh Token (JWT)
- → returned in response body     → set as an httpOnly cookie ("jwt")
- → sent as "Authorization:       → sent automatically by the
-    Bearer <token>"                 browser on future requests
-```
- 
-- Registration (`POST /api/auth/register`) creates a user with a bcrypt-hashed password.
-- Login (`POST /api/auth/login`) accepts a username **or** email plus a password, and on success returns an access token and sets the refresh token as an `httpOnly` cookie.
-- Access tokens are short-lived (1 hour when first issued at login, 15 minutes when reissued) and carry the user's id, username, and role.
-- `GET /api/auth/refresh` reads the refresh-token cookie and issues a new access token, letting the frontend silently restore a session on page load.
-- `GET /api/auth/logout` invalidates the stored refresh token and clears the cookie.
-- Route middleware enforces access: `verifyJWT` requires a valid access token; `verifyRoles("admin")` additionally requires the `admin` role.
-- On the frontend, `ProtectedRoute` and `AdminProtectedRoute` gate access to authenticated and admin-only pages respectively.
-- Two roles (`user`, `admin`) and two account statuses (`active`, `inactive`) are supported.
+
 ## API Endpoints
  
 ### Authentication (`/api/auth`)
@@ -273,7 +225,7 @@ Access Token (JWT)              Refresh Token (JWT)
  
 All three models use Mongoose `timestamps` (`createdAt`, `updatedAt`).
  
-**Relationships:** a `User` owns many `Project`s; a `Project` has many `Task`s; a `Task` also references the `User` who created it.
+
  
 ## Getting Started
  
@@ -311,18 +263,7 @@ npm run dev
  
 > **Note:** the frontend's Axios base URL and the backend's CORS origin are currently hardcoded to `http://localhost:3000/api` and `http://localhost:5173` respectively, so the app is set up to run both services locally out of the box.
  
-## Environment Variables
- 
-Create a `.env` file in `server/` with the following variables:
- 
-| Variable | Description |
-|---|---|
-| `PORT` | Port for the Express server (defaults to `3000` if not set) |
-| `MONGO_URI` | MongoDB connection string |
-| `ACCESS_TOKEN_SECRET` | Secret used to sign JWT access tokens |
-| `REFRESH_TOKEN_SECRET` | Secret used to sign JWT refresh tokens |
-| `NODE_ENV` | `development` or `production` — affects refresh-cookie security settings |
- 
+
 ## Running the Project
  
 | Command | Location | Description |
@@ -341,23 +282,8 @@ Create a `.env` file in `server/` with the following variables:
 - Ownership checks ensure users can only read or modify their own projects and tasks.
 - Admin safeguards prevent an admin from deactivating, demoting, or deleting their own account, and prevent removing the last remaining admin.
 - Server-side validation covers required fields, field lengths, allowed status/priority/role values, future-only due dates, email format, and password strength.
-### Reporting a Vulnerability
- 
-If you discover a security vulnerability, please open an issue describing the problem.
- 
-## Screenshots
- 
-_Add screenshots or a short demo GIF here showcasing the dashboard, projects, tasks, and admin views._
- 
-## Future Improvements
- 
-- Add automated tests (unit and integration) for both frontend and backend
-- Add a Swagger / OpenAPI specification for the API
-- Move the frontend API base URL and backend CORS origin into environment variables for multi-environment deployments
-- Add refresh-token rotation and an Axios interceptor to auto-refresh on token expiry
-- Add search and filtering to the projects list (currently available on tasks only)
-- Support direct avatar file uploads instead of an avatar URL
-- Deploy the app and link a live demo
+
+
 ## Contributing
  
 Contributions, issues, and feature requests are welcome.
@@ -375,6 +301,3 @@ git push origin feature/your-feature
 **Dhyaa**
 GitHub: [@Dhyaa-km](https://github.com/Dhyaa-km)
  
-## License
- 
-This project does not currently include a license file. [Add a license, e.g. MIT, if you plan to open-source this project.]
