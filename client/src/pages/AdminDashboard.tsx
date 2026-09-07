@@ -9,7 +9,6 @@ import {
   ShieldCheck,
   UserCheck,
   UserRound,
-  UserX,
 } from "lucide-react";
 
 import { getAdminDashboardStats } from "../services/adminDashboardService";
